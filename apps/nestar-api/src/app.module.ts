@@ -9,6 +9,7 @@ import { ComponentsModule } from './components/components.module';
 import { DatabaseModule } from './database/database.module';
 import { error } from 'console';
 import { T } from './libs/types/common';
+import { AuthService } from './components/auth/auth.service';
  
 @Module({
   imports: [ConfigModule.forRoot(), 
@@ -28,6 +29,6 @@ import { T } from './libs/types/common';
     }
   }), ComponentsModule, DatabaseModule],
   controllers: [AppController],
-  providers: [AppService, AppResolver],
+  providers: [AppService, AppResolver, AuthService],
 })
 export class AppModule {}
