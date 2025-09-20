@@ -3,32 +3,38 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver } from '@nestjs/apollo'
+import { ApolloDriver } from '@nestjs/apollo';
 import { AppResolver } from './app.resolver';
 import { ComponentsModule } from './components/components.module';
 import { DatabaseModule } from './database/database.module';
-import { error } from 'console';
 import { T } from './libs/types/common';
-import { AuthService } from './components/auth/auth.service';
- 
+import { AuthModule } from './components/auth/auth.module';
+
 @Module({
-  imports: [ConfigModule.forRoot(), 
+  imports: [
+    ConfigModule.forRoot(),
     GraphQLModule.forRoot({
-    driver: ApolloDriver,
-    playground: true,
-    uploads: true,
-    autoSchemaFile: true,
-    formatError: (error: T) => {
-      const graphQLFormattedError = {
-        code: error?.extensions.code,
-        message: 
-            error?.extensions?.exception?.response.message || error?.extensions?.response?.message || error?.message,
-      };
-      console.log('GRAPHQL GLOBAL ERR:', graphQLFormattedError);
-      return graphQLFormattedError;
-    }
-  }), ComponentsModule, DatabaseModule],
+      driver: ApolloDriver,
+      playground: true,
+      uploads: true,
+      autoSchemaFile: true,
+      formatError: (error: T) => {
+        const graphQLFormattedError = {
+          code: error?.extensions?.code,
+          message:
+            error?.extensions?.exception?.response?.message ||
+            error?.extensions?.response?.message ||
+            error?.message,
+        };
+        console.log('GRAPHQL GLOBAL ERR:', graphQLFormattedError);
+        return graphQLFormattedError;
+      },
+    }),
+    ComponentsModule,
+    DatabaseModule,
+    AuthModule, 
+  ],
   controllers: [AppController],
-  providers: [AppService, AppResolver, AuthService],
+  providers: [AppService, AppResolver], 
 })
 export class AppModule {}
