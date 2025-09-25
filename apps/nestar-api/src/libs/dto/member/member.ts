@@ -17,7 +17,7 @@ export class Member {
     memberStatus: MemberStatus;
 
     @Field(() => MemberAuthType, { nullable: true })
-    memberAutType: MemberAuthType;
+    memberAuthType: MemberAuthType;
     
     @Field(() => String)
     memberPhone: string
