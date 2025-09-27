@@ -16,7 +16,7 @@ import { throwError } from 'rxjs';
 
 @Injectable()
 export class MemberService {
-   constructor(@InjectModel("Member") private readonly memberModel: Model<Member>,
+   constructor(@InjectModel('Member') private readonly memberModel: Model<Member>,
    public authService: AuthService,
    public viewService: ViewService,
 ) {}
