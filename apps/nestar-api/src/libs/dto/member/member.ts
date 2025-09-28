@@ -17,7 +17,7 @@ export class Member {
     memberStatus: MemberStatus;
 
     @Field(() => MemberAuthType, { nullable: true })
-    memberAuthType: MemberAuthType;
+    memberAuthType?: MemberAuthType;
     
     @Field(() => String)
     memberPhone: string
@@ -73,7 +73,7 @@ export class Member {
    memberBlocks: number;
 
    @Field(() => Date, { nullable: true })
-   deleteAt?: Date;
+   deletedAt?: Date;
 
    @Field(() => Date)
    createdAt: Date;

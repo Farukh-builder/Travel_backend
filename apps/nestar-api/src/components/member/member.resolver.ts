@@ -54,7 +54,7 @@ export class MemberResolver {
     @Mutation(() => Member)
     public async updateMember(
         @Args('input') input: MemberUpdate,
-        @AuthMember("_id") memberId:ObjectId
+        @AuthMember("_id") memberId: ObjectId
      ): Promise<Member
      > {
         console.log('Mutation: updateMember');
