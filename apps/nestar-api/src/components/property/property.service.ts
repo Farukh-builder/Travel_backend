@@ -3,7 +3,7 @@ import { Model, ObjectId } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Properties, Property } from '../../libs/dto/property/property';
 import { Direction, Message } from '../../libs/enums/common.enum';
-import { AgentPropertiesInquiry, PropertiesInquiry, PropertyInput } from '../../libs/dto/property/property.input';
+import { AgentPropertiesInquiry, AllPropertiesInquiry, PropertiesInquiry, PropertyInput } from '../../libs/dto/property/property.input';
 import { MemberService } from '../member/member.service';
 import { StatisticModifier, T } from '../../libs/types/common';
 import { PropertyStatus } from '../../libs/enums/property.enum';
@@ -12,6 +12,7 @@ import { ViewService } from '../view/view.service';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
 import * as moment from 'moment';
 import { lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
+import { PromiseOrValue } from 'graphql/jsutils/PromiseOrValue';
 
 @Injectable()
 export class PropertyService {
@@ -172,6 +173,35 @@ export class PropertyService {
         propertyStatus: propertyStatus ?? { $ne: PropertyStatus.DELETE }
       };
       const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
+
+      const result = await this.propertyModel
+        .aggregate([
+        { $match: match },
+        { $sort: sort },
+        {
+          $facet: {
+            list: [
+              { $skip: (input.page -1) * input.limit },
+              { $limit: input.limit },
+              lookupMember,
+              { $unwind: '$memberData' },
+            ],
+            metaCounter: [{ $count: 'total' }],
+          }
+        }
+        ])
+        .exec();
+        if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+        return result[0];
+     }
+
+     public async getAllPropertiesByAdmin(input: AllPropertiesInquiry): Promise<Properties> {
+      const { propertyStatus, propertyLocationList } = input.search;
+      const match: T = { propertyStatus: PropertyStatus.ACTIVE };
+      const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
+
+      if (propertyStatus) match.propertyStatus = propertyStatus;
+      if (propertyLocationList) match.propertyLocation = { $in: propertyLocationList };
 
       const result = await this.propertyModel
         .aggregate([
