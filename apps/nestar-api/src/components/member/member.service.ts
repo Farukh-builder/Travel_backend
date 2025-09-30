@@ -10,7 +10,6 @@ import { StatisticModifier, T } from '../../libs/types/common';
 import { ViewService } from '../view/view.service';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { console } from 'inspector';
-import { throwError } from 'rxjs';
 import { Member, Members } from '../../libs/dto/member/member';
 ;
 

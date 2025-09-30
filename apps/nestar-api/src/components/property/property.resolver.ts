@@ -12,7 +12,6 @@ import { ObjectId } from 'mongoose';
 import { WithoutGuard } from '../auth/guards/without.guard';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
-import { Agent } from 'http';
 
 @Resolver()
 export class PropertyResolver {

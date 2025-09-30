@@ -12,7 +12,6 @@ import { ViewService } from '../view/view.service';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
 import * as moment from 'moment';
 import { lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
-import { PromiseOrValue } from 'graphql/jsutils/PromiseOrValue';
 
 @Injectable()
 export class PropertyService {
@@ -133,7 +132,7 @@ export class PropertyService {
        return result[0];
    }
 
-   public shapeMatchQuery(match: T, input: PropertiesInquiry): void {
+   private shapeMatchQuery(match: T, input: PropertiesInquiry): void {
     const {
       memberId,
       locationList,
