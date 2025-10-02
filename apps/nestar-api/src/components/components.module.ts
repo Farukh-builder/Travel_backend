@@ -18,6 +18,6 @@ import { BoardArticleModule } from './board-article/board-article.module';
     ViewModule, 
     CommentModule, 
     FollowModule, 
-  ]
+  ],
 })
 export class ComponentsModule {}
