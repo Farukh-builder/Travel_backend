@@ -84,8 +84,8 @@ export class PropertyResolver {
         return await this.propertyService.getAgentProperties(memberId, input);
     }
 
-
-
+    // Like
+    
     @UseGuards(AuthGuard)
     @Mutation(() => Property)
     public async likeTargetProperty(
@@ -96,8 +96,6 @@ export class PropertyResolver {
        const likeRefId = shapeIntoMongoObjectId(input)
        return await this.propertyService.likeTargetProperty(memberId, likeRefId);
     }
-
-       
 
     /** ADMIN **/
     
