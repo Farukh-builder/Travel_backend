@@ -10,7 +10,8 @@ import { LikeModule } from '../like/like.module';
 @Module({
   imports: [
     MongooseModule.forFeature([
-      { name: 'Member', 
+      { 
+        name: 'Member', 
         schema: MemberSchema 
       }
     ]), AuthModule,
