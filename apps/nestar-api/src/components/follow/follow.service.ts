@@ -6,9 +6,7 @@ import { MemberService } from '../member/member.service';
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { FollowInquiry } from '../../libs/dto/follow/follow.input';
 import { T } from '../../libs/types/common';
-import { create } from 'domain';
-import { lookup } from 'dns';
-import { lookupAuthMemberLiked, lookupFollowerData, lookupFollowingData } from '../../libs/config';
+import { lookupAuthFollowed, lookupAuthMemberLiked, lookupFollowerData, lookupFollowingData } from '../../libs/config';
 
 @Injectable()
 export class FollowService {
@@ -77,7 +75,10 @@ public async getMemberFollowings(memberId: ObjectId, input: FollowInquiry): Prom
                     { $skip: (page - 1) * limit },
                     { $limit: limit },
                     lookupAuthMemberLiked(memberId, "$followingId"),
-                    // me Followed
+                    lookupAuthFollowed({
+                      followerId: memberId,
+                      followingId: '$followingId',
+                    }),
                     lookupFollowingData,
                     { $unwind: '$followingData' },
                 ],
@@ -109,8 +110,10 @@ public async getMemberFollowings(memberId: ObjectId, input: FollowInquiry): Prom
                     { $skip: (page - 1) * limit },
                     { $limit: limit },
                     lookupAuthMemberLiked(memberId, "$followerId"),
-                    // me Followed
-                    lookupFollowerData,
+                    lookupAuthFollowed({
+                      followerId: memberId,
+                      followingId: '$followerId',
+                    }),                    lookupFollowerData,
                     { $unwind: '$followerData' },
                 ],
                 metaCounter: [{ $count: 'total' }],
