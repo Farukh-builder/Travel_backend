@@ -33,7 +33,7 @@ export const shapeIntoMongoObjectId = (target: any) => {
     return typeof target === 'string' ? new ObjectId(target) : target;
 };
 
-export const loopupAuthMemberLiked = (memberId: T, targetRefId: string =  '$_id') => {
+export const lookupAuthMemberLiked = (memberId: T, targetRefId: string =  '$_id') => {
   return {
 	$lookup: {
 		from: 'likes',
