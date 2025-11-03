@@ -30,21 +30,7 @@ export class PropertyInput {
     @Field(() => Number)
     propertyPrice: number;
 
-    @IsNotEmpty()
-    @Field(() => Number)
-    propertySquare: number;
 
-    @IsNotEmpty()
-    @IsInt()
-    @Min(1)
-    @Field(() => Int)
-    propertyBeds: number;
-
-    @IsNotEmpty()
-    @IsInt()
-    @Min(1)
-    @Field(() => Int)
-    propertyRooms: number;
 
     @IsNotEmpty()
     @Field(() => [String])
@@ -55,16 +41,6 @@ export class PropertyInput {
     @Field(() => String, {nullable: true})
     propertyDesc?: string;
 
-
-    @IsOptional()
-    @Field(() => Boolean, {nullable:true})
-    propertyBarter?: boolean;
-
-
-    @IsOptional()
-    @Field(() => Boolean, {nullable:true})
-    propertyRent?: boolean;
-    
 
     memberId?: ObjectId;
 
@@ -117,13 +93,6 @@ class PISearch {
     @Field(() => [PropertyType], {nullable: true})
     typeList?: PropertyType[];
 
-    @IsOptional()
-    @Field(() => [Int], { nullable: true })
-    roomsList?: Number[];
-
-    @IsOptional()
-    @Field(() => [Int], { nullable: true })
-    bedsList: Number[];
 
     @IsOptional()
     @IsIn(availableOptions, { each: true })
@@ -138,9 +107,6 @@ class PISearch {
     @Field(() => PeriodsRange, {nullable: true})
     periodsRange?: PeriodsRange;
 
-    @IsOptional()
-    @Field(() => SquaresRange, {nullable: true})
-    squaresRange?: SquaresRange;
 
     @IsOptional()
     @Field(() => String, {nullable: true})

@@ -36,20 +36,6 @@ const PropertySchema = new Schema (
 			required: true,
 		},
 
-		propertySquare: {
-			type: Number,
-			required: true,
-		},
-
-		propertyBeds: {
-			type: Number,
-			required: true,
-		},
-
-		propertyRooms: {
-			type: Number,
-			required: true,
-		},
 
 		propertyViews: {
 			type: Number,
@@ -80,15 +66,6 @@ const PropertySchema = new Schema (
 			type: String,
 		},
 
-		propertyBarter: {
-			type: Boolean,
-			default: false,
-		},
-
-		propertyRent: {
-			type: Boolean,
-			default: false,
-		},
 
 		memberId: {
 			type: Schema.Types.ObjectId,

@@ -32,17 +32,6 @@ export class Property {
     @Field(() => Number)
     propertyPrice: number;
 
-
-    @Field(() => Number)
-    propertySquare: number;
-
-    @Field(() => Int)
-    propertyBeds: number;
-
-
-    @Field(() => Int)
-    propertyRooms: number;
-
     @Field(() => Int)
     propertyViews: number;
 
@@ -64,12 +53,7 @@ export class Property {
 
     @Field(() => String, { nullable:true })
     propertyDesc?: string;
-    
-    @Field(() => Boolean)
-    propertyBarter: boolean;
 
-    @Field(() => Boolean)
-    propertyRent: boolean;
     
     @Field(() => String)
     memberId: ObjectId;

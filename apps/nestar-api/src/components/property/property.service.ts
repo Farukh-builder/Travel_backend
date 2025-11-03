@@ -74,7 +74,7 @@ export class PropertyService {
       propertyStatus: PropertyStatus.ACTIVE,
     };
 
-    if (propertyStatus === PropertyStatus.SOLD) soldAt = moment().toDate();
+    if (propertyStatus === PropertyStatus.INACTIVE) soldAt = moment().toDate();
     else if (propertyStatus === PropertyStatus.DELETE) deletedAt = moment().toDate();
 
     const result = await this.propertyModel
@@ -131,24 +131,18 @@ export class PropertyService {
     const {
       memberId,
       locationList,
-      roomsList,
-      bedsList,
       typeList,
       periodsRange,
       pricesRange,
-      squaresRange,
       options,
       text,
     } = input.search;
     if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
     if (locationList && locationList.length) match.propertyLocation = { $in: locationList };
-    if (roomsList && roomsList.length) match.propertyRooms =  { $in: roomsList };
-    if (bedsList && bedsList.length) match.propertyBeds =  { $in: bedsList };
     if (typeList && typeList.length) match.propertyType =  { $in: typeList };
 
     if (pricesRange) match.propertyPrice = { $gte: pricesRange.start, $lte: pricesRange.end};
     if (periodsRange) match.createdAt = { $gte: periodsRange.start, $lte: periodsRange.end};
-    if (squaresRange) match.propertySquare = { $gte: squaresRange.start, $lte: squaresRange.end};
 
     if (text) match.propertyTitle = { $regex: new RegExp(text, 'i') };
     if (options) {
@@ -254,7 +248,7 @@ export class PropertyService {
       propertyStatus: PropertyStatus.ACTIVE,
     };
 
-    if (propertyStatus === PropertyStatus.SOLD) soldAt = moment().toDate();
+    if (propertyStatus === PropertyStatus.INACTIVE) soldAt = moment().toDate();
     else if (propertyStatus === PropertyStatus.DELETE) deletedAt = moment().toDate();
 
     const result = await this.propertyModel
