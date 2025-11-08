@@ -111,6 +111,36 @@ export class NoticeResolver {
     return await this.noticeService.removeNoticeByAdmin(noticeId)
     }
 
+    // ConvertInquiryToFAQ
+
+    @Roles(MemberType.ADMIN)
+    @UseGuards(RolesGuard) 
+    @Mutation((returns) => Notice)
+    public async convertInquiryToFAQ(
+        @Args('noticeId') input: string,
+        @AuthMember('_id') memberId: ObjectId,
+    ): Promise<Notice> {
+    console.log('Mutation: convertInquiryToFAQ');
+    const noticeId = shapeIntoMongoObjectId(input)
+    return await this.noticeService.convertInquiryToFAQ(noticeId)
+    }
+
+    // CreateNoticeByAdmin (for FAQs and TERMS)
+
+    @Roles(MemberType.ADMIN)
+    @UseGuards(RolesGuard) 
+    @Mutation((returns) => Notice)
+    public async createNoticeByAdmin(
+        @Args('input') input: NoticeInput,
+        @AuthMember('_id') memberId: ObjectId,
+    ): Promise<Notice> {
+    console.log('Mutation: createNoticeByAdmin');
+    return await this.noticeService.createNoticeByAdmin(memberId, input)
+    }
+
     
 }
+
+
+
 

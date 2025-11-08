@@ -18,7 +18,7 @@ import { NoticeModule } from './notice/notice.module';
     LikeModule, 
     ViewModule, 
     CommentModule, 
-    FollowModule,
+    FollowModule, 
     BoardArticleModule,
     NoticeModule, 
   ],

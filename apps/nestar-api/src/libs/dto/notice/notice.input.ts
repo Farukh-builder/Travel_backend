@@ -102,3 +102,6 @@ export class AllNoticesInquiry {
 	search: ANISearch;
 }
 
+
+
+

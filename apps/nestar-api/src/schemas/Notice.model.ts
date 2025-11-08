@@ -36,3 +36,6 @@ const NoticeSchema = new Schema(
 
 export default NoticeSchema;
 
+
+
+

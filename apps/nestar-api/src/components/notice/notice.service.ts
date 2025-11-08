@@ -18,6 +18,13 @@ export class NoticeService {
 
 public async createNotice(memberId: ObjectId, input: NoticeInput): Promise<Notice> {
     input.memberId = memberId;
+    
+    // Users can only create INQUIRY type notices
+    const member = await this.memberService.getMember(null, memberId);
+    if (member.memberType !== 'ADMIN' && input.noticeCategory !== 'INQUIRY') {
+        throw new BadRequestException('Only admins can create FAQ and TERMS notices');
+    }
+    
     try {
         const result = await this.noticeModel.create(input);
         return result; 
@@ -142,5 +149,44 @@ public async removeNoticeByAdmin(noticeId: ObjectId): Promise<Notice> {
     return result;
 }
 
+public async convertInquiryToFAQ(noticeId: ObjectId): Promise<Notice> {
+    const notice = await this.noticeModel.findById(noticeId).exec();
+    if (!notice) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+    
+    if (notice.noticeCategory !== 'INQUIRY') {
+        throw new BadRequestException('Only INQUIRY notices can be converted to FAQ');
+    }
+
+    const result = await this.noticeModel
+        .findByIdAndUpdate(
+            noticeId,
+            { 
+                noticeCategory: 'FAQ',
+                noticeStatus: NoticeStatus.ACTIVE 
+            },
+            { new: true }
+        )
+        .exec();
+
+    if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+    return result;
 }
+
+public async createNoticeByAdmin(memberId: ObjectId, input: NoticeInput): Promise<Notice> {
+    input.memberId = memberId;
+    
+    // Admins can create any type of notice (FAQ, TERMS, INQUIRY)
+    try {
+        const result = await this.noticeModel.create(input);
+        return result; 
+    } catch (err) {
+        console.log('Error, Service.model:', err.message);
+        throw new BadRequestException(Message.CREATE_FAILED)
+    }
+}
+
+}
+
+
+
 
