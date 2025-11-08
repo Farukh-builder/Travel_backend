@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import { Schema } from 'mongoose';
 import { NoticeCategory, NoticeStatus } from '../libs/enums/notice.enum';
 
 const NoticeSchema = new Schema(
@@ -12,7 +12,7 @@ const NoticeSchema = new Schema(
 		noticeStatus: {
 			type: String,
 			enum: NoticeStatus,
-			default: NoticeStatus.ACTIVE,
+			default: NoticeStatus.HOLD,
 		},
 
 		noticeTitle: {
@@ -24,7 +24,7 @@ const NoticeSchema = new Schema(
 			type: String,
 			required: true,
 		},
-		
+
 		memberId: {
 			type: Schema.Types.ObjectId,
 			required: true,
@@ -35,3 +35,4 @@ const NoticeSchema = new Schema(
 );
 
 export default NoticeSchema;
+
