@@ -1,4 +1,4 @@
-import { BadGatewayException, BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { Follower, Followers, Following, Followings } from '../../libs/dto/follow/follow';
@@ -7,12 +7,16 @@ import { Direction, Message } from '../../libs/enums/common.enum';
 import { FollowInquiry } from '../../libs/dto/follow/follow.input';
 import { T } from '../../libs/types/common';
 import { lookupAuthFollowed, lookupAuthMemberLiked, lookupFollowerData, lookupFollowingData } from '../../libs/config';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class FollowService {
-    constructor(@InjectModel("Follow") private readonly followModel: Model<Follower | Following>,
-    private readonly memberService: MemberService,
-){}
+    constructor(
+        @InjectModel("Follow") private readonly followModel: Model<Follower | Following>,
+        private readonly memberService: MemberService,
+        @Inject(forwardRef(() => NotificationService))
+        private readonly notificationService: NotificationService,
+    ){}
 
 public async subscribe(followerId: ObjectId, followingId: ObjectId): Promise<Follower> {
     if (followerId.toString() === followingId.toString()) {
@@ -27,6 +31,11 @@ public async subscribe(followerId: ObjectId, followingId: ObjectId): Promise<Fol
     await this.memberService.memberStatsEditor({ _id: followerId, targetKey: 'memberFollowings', modifier: 1 });
     await this.memberService.memberStatsEditor({ _id: followingId, targetKey: 'memberFollowers', modifier: 1 });
 
+    // Create notification on follow
+    await this.notificationService.createFollowNotification({
+        authorId: followerId,
+        followingId: followingId,
+    });
 
         return result;
 }
@@ -55,6 +64,13 @@ public async unsubscribe(followerId: ObjectId, followingId: ObjectId): Promise<F
 
     await this.memberService.memberStatsEditor({ _id: followerId, targetKey: 'memberFollowings', modifier: -1 });
     await this.memberService.memberStatsEditor({ _id: followingId, targetKey: 'memberFollowers', modifier: -1 });
+    
+    // Remove notification on unfollow
+    await this.notificationService.removeNotificationOnUnfollow({
+        authorId: followerId,
+        followingId: followingId,
+    });
+    
     return result;
   
 }
@@ -113,7 +129,8 @@ public async getMemberFollowings(memberId: ObjectId, input: FollowInquiry): Prom
                     lookupAuthFollowed({
                       followerId: memberId,
                       followingId: '$followerId',
-                    }),                    lookupFollowerData,
+                    }),
+                    lookupFollowerData,
                     { $unwind: '$followerData' },
                 ],
                 metaCounter: [{ $count: 'total' }],

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Search } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException, Search } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { MemberService } from '../member/member.service';
 import { Model, ObjectId } from 'mongoose';
@@ -11,6 +11,7 @@ import { Comments, Comment } from '../../libs/dto/comment/comment';
 import { CommentUpdate } from '../../libs/dto/comment/comment.update';
 import { T } from '../../libs/types/common';
 import { lookupMember } from '../../libs/config';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class CommentService {
@@ -19,6 +20,8 @@ export class CommentService {
         private readonly memberService: MemberService,
         private readonly propertyService: PropertyService,
         private readonly boardArticleService: BoardArticleService,
+        @Inject(forwardRef(() => NotificationService))
+        private readonly notificationService: NotificationService,
     ) {}
 
     public async createComment(memberId: ObjectId, input: CommentInput): Promise<Comment> {
@@ -57,6 +60,14 @@ export class CommentService {
                     
                     break;
         }
+
+        // Create notification after comment
+        await this.notificationService.createCommentNotification({
+            authorId: memberId,
+            commentRefId: input.commentRefId,
+            commentGroup: input.commentGroup,
+            commentContent: input.commentContent,
+        });
 
         if (!result) throw new InternalServerErrorException(Message.CREATE_FAILED);
         return result;
@@ -100,7 +111,8 @@ export class CommentService {
                 metaCounter: [{ $count: 'total' }],
              },
            },
-        ]);
+        ])
+        .exec();
         if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
         return result[0];
     }

@@ -1,25 +1,60 @@
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
+import { ObjectId } from 'mongoose';
+import { NotificationGroup, NotificationStatus, NotificationType } from '../../enums/notification.enum';
+import { Member, TotalCounter } from '../member/member';
 
 @ObjectType()
 export class Notification {
-  @Field(() => ID)
-  _id: string;
+	@Field(() => String)
+	_id: ObjectId;
 
-  @Field()
-  receiverId: string;
+	@Field(() => NotificationType)
+	notificationType: NotificationType;
 
-  @Field({ nullable: true })
-  senderId?: string;
+	@Field(() => NotificationStatus)
+	notificationStatus: NotificationStatus;
 
-  @Field()
-  message: string;
+	@Field(() => NotificationGroup)
+	notificationGroup: NotificationGroup;
 
-  @Field({ nullable: true })
-  type?: string; // LIKE | FOLLOW | COMMENT | PROPERTY
+	@Field(() => String)
+	notificationTitle: string;
 
-  @Field({ defaultValue: false })
-  isRead: boolean;
+	@Field(() => String, { nullable: true })
+	notificationDesc?: string;
 
-  @Field(() => Date)
-  createdAt: Date;
+	@Field(() => String)
+	authorId: ObjectId;
+
+	@Field(() => String)
+	receiverId: ObjectId;
+
+	@Field(() => String, { nullable: true })
+	propertyId?: ObjectId;
+
+	@Field(() => String, { nullable: true })
+	articleId?: ObjectId;
+
+	@Field(() => Date)
+	createdAt: Date;
+
+	@Field(() => Date)
+	updatedAt: Date;
+
+	/** from aggregation **/
+
+	@Field(() => Member, { nullable: true })
+	authorData?: Member;
+
+	@Field(() => Member, { nullable: true })
+	receiverData?: Member;
+}
+
+@ObjectType()
+export class Notifications {
+	@Field(() => [Notification])
+	list: Notification[];
+
+	@Field(() => [TotalCounter], { nullable: true })
+	metaCounter: TotalCounter[];
 }

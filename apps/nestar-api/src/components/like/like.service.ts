@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { Like, MeLiked } from '../../libs/dto/like/like';
@@ -9,10 +9,15 @@ import { OrdinaryInquiry } from '../../libs/dto/property/property.input';
 import { Properties } from '../../libs/dto/property/property';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { lookupFavorite } from '../../libs/config';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class LikeService {
-    constructor(@InjectModel('Like') private readonly likeModel: Model<Like>) {}
+    constructor(
+        @InjectModel('Like') private readonly likeModel: Model<Like>,
+        @Inject(forwardRef(() => NotificationService))
+        private readonly notificationService: NotificationService,
+    ) {}
 
    public async toggleLike(input: LikeInput): Promise<number> {
      const search: T = { memberId: input.memberId, likeRefId: input.likeRefId },
@@ -22,9 +27,21 @@ export class LikeService {
      if (exist) {
         await this.likeModel.findOneAndDelete(search).exec();
         modifier = -1;
+        // Remove notification on unlike
+        await this.notificationService.removeNotificationOnUnlike({
+            authorId: input.memberId,
+            likeRefId: input.likeRefId,
+            likeGroup: input.likeGroup,
+        });
      } else {
         try {
           await this.likeModel.create(input);
+          // Create notification on like
+          await this.notificationService.createLikeNotification({
+              authorId: input.memberId,
+              likeRefId: input.likeRefId,
+              likeGroup: input.likeGroup,
+          });
         } catch (err) {
             console.log('ERROR, Service.model:', err.message);
             throw new BadRequestException(Message.CREATE_FAILED);

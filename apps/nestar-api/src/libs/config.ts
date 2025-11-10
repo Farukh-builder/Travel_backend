@@ -15,6 +15,7 @@ export const availablePropertySorts = [
 export const availabeBoardArticleSorts = ['createdAt', 'updatedAt', 'articleLikes', 'articleViews']
 export const availableCommentSorts = ['createdAt', 'updatedAt']
 export const availableNoticeSorts = ['createdAt', 'updatedAt']
+export const availableNotificationSorts = ['createdAt', 'updatedAt']
 
 
  /**  IMAGE CONFIGURATION */
@@ -144,5 +145,23 @@ export const lookupVisit = {
 		localField: 'visitedProperty.memberId',
 		foreignField: '_id',
 		as: 'visitedProperty.memberData',
+	},
+};
+
+export const lookupAuthorData = {
+	$lookup: {
+		from: 'members',
+		localField: 'authorId',
+		foreignField: '_id',
+		as: 'authorData',
+	},
+};
+
+export const lookupReceiverData = {
+	$lookup: {
+		from: 'members',
+		localField: 'receiverId',
+		foreignField: '_id',
+		as: 'receiverData',
 	},
 };
