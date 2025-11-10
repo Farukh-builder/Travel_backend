@@ -16,6 +16,7 @@ export const availabeBoardArticleSorts = ['createdAt', 'updatedAt', 'articleLike
 export const availableCommentSorts = ['createdAt', 'updatedAt']
 export const availableNoticeSorts = ['createdAt', 'updatedAt']
 export const availableNotificationSorts = ['createdAt', 'updatedAt']
+export const availableMessageSorts = ['createdAt', 'updatedAt']
 
 
  /**  IMAGE CONFIGURATION */
@@ -163,5 +164,14 @@ export const lookupReceiverData = {
 		localField: 'receiverId',
 		foreignField: '_id',
 		as: 'receiverData',
+	},
+};
+
+export const lookupSenderData = {
+	$lookup: {
+		from: 'members',
+		localField: 'senderId',
+		foreignField: '_id',
+		as: 'senderData',
 	},
 };

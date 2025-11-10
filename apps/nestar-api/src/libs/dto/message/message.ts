@@ -1,27 +1,27 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { NoticeCategory, NoticeStatus } from '../../enums/notice.enum';
 import { ObjectId } from 'mongoose';
+import { MessageStatus } from '../../enums/message.enum';
 import { Member, TotalCounter } from '../member/member';
 
 @ObjectType()
-export class Notice {
+export class Message {
 	@Field(() => String)
 	_id: ObjectId;
 
-	@Field(() => NoticeCategory)
-	noticeCategory: NoticeCategory;
-
-	@Field(() => NoticeStatus)
-	noticeStatus: NoticeStatus;
+	@Field(() => String)
+	senderId: ObjectId;
 
 	@Field(() => String)
-	noticeTitle: string;
+	receiverId: ObjectId;
 
 	@Field(() => String)
-	noticeContent: string;
+	messageContent: string;
 
-	@Field(() => String)
-	memberId: ObjectId;
+	@Field(() => MessageStatus)
+	messageStatus: MessageStatus;
+
+	@Field(() => String, { nullable: true })
+	messageRefId?: ObjectId;
 
 	@Field(() => Date)
 	createdAt: Date;
@@ -32,27 +32,20 @@ export class Notice {
 	/** from aggregation **/
 
 	@Field(() => Member, { nullable: true })
-	memberData?: Member;
+	senderData?: Member;
+
+	@Field(() => Member, { nullable: true })
+	receiverData?: Member;
 }
 
 @ObjectType()
-export class Notices {
-	@Field(() => [Notice])
-	list: Notice[];
+export class Messages {
+	@Field(() => [Message])
+	list: Message[];
 
 	@Field(() => [TotalCounter], { nullable: true })
 	metaCounter: TotalCounter[];
 }
-
-
-
-
-
-
-
-
-
-
 
 
 

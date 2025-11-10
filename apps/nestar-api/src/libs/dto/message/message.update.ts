@@ -1,24 +1,18 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { IsNotEmpty, IsOptional } from 'class-validator';
-import { NotificationStatus } from '../../enums/notification.enum';
 import { ObjectId } from 'mongoose';
+import { MessageStatus } from '../../enums/message.enum';
 
 @InputType()
-export class NotificationUpdate {
+export class MessageUpdate {
 	@IsNotEmpty()
 	@Field(() => String)
 	_id: ObjectId;
 
 	@IsOptional()
-	@Field(() => NotificationStatus, { nullable: true })
-	notificationStatus?: NotificationStatus;
+	@Field(() => MessageStatus, { nullable: true })
+	messageStatus?: MessageStatus;
 }
-
-
-
-
-
-
 
 
 
