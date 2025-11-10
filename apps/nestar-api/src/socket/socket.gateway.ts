@@ -22,7 +22,7 @@ export class SocketGateway implements OnGatewayInit {
   private connectedClients: Map<string, AuthenticatedSocket> = new Map();
 
   public afterInit(server: Server) {
-    this.logger.log(`WebSocket Server Initialized total: ${this.summaryClient}`)
+    this.logger.verbose(`WebSocket Server Initialized total: ${this.summaryClient}`)
   }
 
   handleConnection(client: AuthenticatedSocket, ...args: any[]) {
@@ -57,6 +57,8 @@ export class SocketGateway implements OnGatewayInit {
     }
   }
 
+  // Notification
+
   @SubscribeMessage('unsubscribe')
   public handleUnsubscribe(client: AuthenticatedSocket): void {
     if (client.memberId) {
@@ -66,7 +68,6 @@ export class SocketGateway implements OnGatewayInit {
     }
   }
 
-  // Method to emit notification to specific user
   public emitNotificationToUser(memberId: string, notification: any): void {
     const client = this.connectedClients.get(memberId);
     if (client) {
@@ -77,7 +78,6 @@ export class SocketGateway implements OnGatewayInit {
     }
   }
 
-  // Broadcast to all connected clients
   public broadcastNotification(notification: any): void {
     this.server.emit('broadcastNotification', notification);
     this.logger.log('Notification broadcast to all clients');

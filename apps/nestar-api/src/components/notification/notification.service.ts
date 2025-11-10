@@ -19,19 +19,19 @@ export class NotificationService {
 		@InjectModel('Notification') private readonly notificationModel: Model<Notification>,
 		@InjectModel('Property') private readonly propertyModel: Model<any>,
 		@InjectModel('BoardArticle') private readonly boardArticleModel: Model<any>,
-		@Inject(forwardRef(() => MemberService))
+		@Inject(forwardRef(() => MemberService))  // Avoiding Circular dependency 
 		private readonly memberService: MemberService,
 		private readonly socketGateway: SocketGateway,
 	) {}
 
 	public async createNotification(input: NotificationInput): Promise<Notification | null> {
 		try {
-			// Don't create notification if author is receiver (self-action)
+			// Don't create notification if author is receiver (self-action)  ->    it means if I try to do like my property i Can't!
 			if (input.authorId?.toString() === input.receiverId?.toString()) {
 				console.log('Skipping notification: author is receiver');
 				return null;
 			}
-
+             // check  existance
 			const existingNotification = await this.notificationModel
 				.findOne({
 					authorId: input.authorId,
@@ -56,7 +56,7 @@ export class NotificationService {
 				this.socketGateway.emitNotificationToUser(input.receiverId.toString(), {
 					_id: result._id,
 					notificationType: result.notificationType,
-					notificationGroup: result.notificationGroup,
+					notificationGroup: result.notificationGroup,     // if USER A likes USER B  it sents the message to -> USER B //
 					notificationTitle: result.notificationTitle,
 					notificationDesc: result.notificationDesc,
 					notificationStatus: result.notificationStatus,
@@ -107,10 +107,13 @@ export class NotificationService {
 		return result[0];
 	}
 
+
+	// hali Get Yani Uqilmagan xabarlarni olish ! //
+
 	public async getUnreadCount(memberId: ObjectId): Promise<number> {
 		const count = await this.notificationModel
-			.countDocuments({
-				receiverId: memberId,
+			.countDocuments({ // count the numbers of unread notifications
+				receiverId: memberId,   
 				notificationStatus: NotificationStatus.WAIT,
 			})
 			.exec();
@@ -121,13 +124,13 @@ export class NotificationService {
 	public async markAsRead(memberId: ObjectId, input: NotificationUpdate): Promise<Notification> {
 		const { _id } = input;
 
-		const result = await this.notificationModel
+		const result = await this.notificationModel     
 			.findOneAndUpdate(
 				{
-					_id: _id,
+					_id: _id, 
 					receiverId: memberId,
 				},
-				{ notificationStatus: NotificationStatus.READ },
+				{ notificationStatus: NotificationStatus.READ },   // this implement read logic
 				{ new: true },
 			)
 			.exec();
@@ -142,9 +145,9 @@ export class NotificationService {
 			.updateMany(
 				{
 					receiverId: memberId,
-					notificationStatus: NotificationStatus.WAIT,
+					notificationStatus: NotificationStatus.WAIT,    
 				},
-				{ notificationStatus: NotificationStatus.READ },
+				{ notificationStatus: NotificationStatus.READ },     /* update all unread notifications to read   */
 			)
 			.exec();
 
@@ -185,13 +188,13 @@ export class NotificationService {
 				receiverId = property.memberId;
 				notificationGroup = NotificationGroup.PROPERTY;
 				notificationTitle = 'liked your property';
-				notificationDesc = property.propertyTitle || '';
+				notificationDesc = property.propertyTitle || '';             
 				propertyId = data.likeRefId;
 			} else if (data.likeGroup === LikeGroup.ARTICLE) {
 				// Get article and author
-				const article = await this.getBoardArticleById(data.likeRefId);
-				receiverId = article.memberId;
-				notificationGroup = NotificationGroup.ARTICLE;
+				const article = await this.getBoardArticleById(data.likeRefId);      // At All all  this board check the like GROUP  
+				receiverId = article.memberId;               
+				notificationGroup = NotificationGroup.ARTICLE;                       // it means to what object member do like Artcl, proper, user
 				notificationTitle = 'liked your article';
 				notificationDesc = article.articleTitle || '';
 				articleId = data.likeRefId;
@@ -240,9 +243,9 @@ export class NotificationService {
 				notificationTitle = 'commented on your property';
 				propertyId = data.commentRefId;
 			} else if (data.commentGroup === CommentGroup.ARTICLE) {
-				const article = await this.getBoardArticleById(data.commentRefId);
+				const article = await this.getBoardArticleById(data.commentRefId);  // At All all  this board check the like GROUP 
 				receiverId = article.memberId;
-				notificationGroup = NotificationGroup.ARTICLE;
+				notificationGroup = NotificationGroup.ARTICLE;                      // it means to what object member do like Artcl, proper, user
 				notificationTitle = 'commented on your article';
 				articleId = data.commentRefId;
 			} else if (data.commentGroup === CommentGroup.MEMBER) {
@@ -335,7 +338,6 @@ export class NotificationService {
 		}
 	}
 
-	/** HELPER METHODS */
 
 	private async getPropertyById(propertyId: ObjectId): Promise<any> {
 		const property = await this.propertyModel.findById(propertyId).lean().exec();
