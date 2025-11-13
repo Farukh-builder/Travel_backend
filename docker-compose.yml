@@ -1,0 +1,36 @@
+version: "3.3"
+
+services:
+  nestar-api:
+    container_name: nestar-api
+    restart: always
+    image: node:22.15.1
+    ports:
+      - 4001:3008
+    volumes:
+      - ./:/usr/src/travel
+    working_dir: /usr/src/travel
+    
+    networks:
+      - monorepo-network
+
+    command: bash -c "npm install && npm run build && npm run start:prod"
+
+  nestar-batch:
+    container_name: nestar-batch
+    restart: unless-stopped
+    image: node:22.15.1
+    ports:
+      - 4002:3009
+    volumes:
+      - ./:/usr/src/travel
+    working_dir: /usr/src/travel
+    
+    networks:
+      - monorepo-network
+
+    command: bash -c "npm install && npm run build && npm run start:prod:batch"        
+
+networks:
+   monorepo-network:
+     driver: bridge
